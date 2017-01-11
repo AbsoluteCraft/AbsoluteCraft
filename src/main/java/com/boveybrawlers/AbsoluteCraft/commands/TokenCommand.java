@@ -1,5 +1,6 @@
 package com.boveybrawlers.AbsoluteCraft.commands;
 
+import com.boveybrawlers.AbsoluteCraft.utils.APILoadCallback;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -29,14 +30,12 @@ public class TokenCommand implements CommandExecutor {
 		}
 		
 		if(args.length == 0) {
-		    player.sendMessage("Loading player...");
-			player.load(new APICallback() {
-				public void run(JSONObject resp) {
-                    player.sendMessage("We have resp");
-                    player.sendMessage("RESP FOR " + resp.getString("username"));
-					player.sendMessage(plugin.prefix + ChatColor.GOLD + player.p.getName() + (player.p.getName().endsWith("s") ? "'" : "'s") + " Tokens: " + ChatColor.GREEN + player.getTokens());
-				}
-			});
+		    player.getTokens(new APILoadCallback() {
+                public void run(Object response) {
+                    int tokens = (Integer) response;
+                    player.sendMessage(plugin.prefix + ChatColor.GOLD + player.p.getName() + (player.p.getName().endsWith("s") ? "'" : "'s") + " Tokens: " + ChatColor.GREEN + tokens);
+                }
+            });
 
 			return true;
 		} else if(args.length == 1) {
@@ -48,14 +47,15 @@ public class TokenCommand implements CommandExecutor {
 				return true;
 			}
 			
-			final ACPlayer acPlayer = new ACPlayer(this.plugin);
-			acPlayer.setPlayer(offline);
-			
-			acPlayer.load(new APICallback() {
-				public void run(JSONObject resp) {
-					player.sendMessage(plugin.prefix + ChatColor.GOLD + acPlayer.p.getName() + (acPlayer.p.getName().endsWith("s") ? "'" : "'s") + " Tokens: " + ChatColor.GREEN + acPlayer.getTokens());					
-				}
-			});
+			final ACPlayer otherPlayer = new ACPlayer(this.plugin);
+			otherPlayer.setPlayer(offline);
+
+            otherPlayer.getTokens(new APILoadCallback() {
+                public void run(Object response) {
+                    int tokens = (Integer) response;
+                    player.sendMessage(plugin.prefix + ChatColor.GOLD + otherPlayer.p.getName() + (otherPlayer.p.getName().endsWith("s") ? "'" : "'s") + " Tokens: " + ChatColor.GREEN + tokens);
+                }
+            });
 
 			return true;
 		} else if(args.length == 3 && player.p.isOp()) {
@@ -77,11 +77,11 @@ public class TokenCommand implements CommandExecutor {
 					return true;
 				}
 				
-				ACPlayer acPlayer = new ACPlayer(this.plugin);
-				acPlayer.setPlayer(offline);
-				
-				acPlayer.addTokens(amount);
-				acPlayer.sendMessage(plugin.prefix + ChatColor.GOLD + "Tokens were added to you by " + player.p.getName() + ChatColor.GREEN + " [+" + amount + "]");
+				ACPlayer recipient = new ACPlayer(this.plugin);
+                recipient.setPlayer(offline);
+
+                recipient.addTokens(amount, player);
+                recipient.sendMessage(plugin.prefix + ChatColor.GOLD + "Tokens were added to you by " + player.p.getName() + ChatColor.GREEN + " [+" + amount + "]");
 				
 				sender.sendMessage(plugin.prefix + "Added " + amount + " " + ((amount > 1) ? "tokens" : "token") + " to " + username);
 				

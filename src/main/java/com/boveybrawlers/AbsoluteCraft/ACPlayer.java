@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.boveybrawlers.AbsoluteCraft.utils.APILoadCallback;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -27,12 +28,17 @@ public class ACPlayer {
 	
 	public Player p = null;
 	public OfflinePlayer offlineP = null;
+    private boolean isLoaded = false;
 	
 	private Integer tokens;
 	
 	public ACPlayer(AbsoluteCraft plugin) {
 		this.plugin = plugin;
 	}
+
+	public boolean isLoaded() {
+	    return this.isLoaded;
+    }
 	
 	public void load(final APICallback callback) {
 	    Map<String, Object> query = new HashMap<String, Object>();
@@ -47,12 +53,12 @@ public class ACPlayer {
 			}
 
 			public void completed(HttpResponse<JsonNode> response) {
-				plugin.getLogger().log(Level.INFO, "Got " + response.getStatus() + " response", response);
 				JSONObject resp = response.getBody().getObject();
-                plugin.getLogger().log(Level.INFO, "Got OK response for " + resp.getString("username") + "!");
 				
 				// TODO: Store more attributes in this model
 				tokens = resp.getInt("tokens");
+
+                isLoaded = true;
 				
 				callback.run(resp);
 			}
@@ -60,7 +66,7 @@ public class ACPlayer {
 	}
 	
 	public Object getPlayer() {
-		if(this.p != null) {
+		if(this.isOnline()) {
 			return this.p;
 		}
 		
@@ -74,6 +80,14 @@ public class ACPlayer {
 
 		return false;
 	}
+
+	public String getName() {
+	    if(this.isOnline()) {
+	        return this.p.getDisplayName();
+        }
+
+        return this.offlineP.getName();
+    }
 	
 	public void setPlayer(OfflinePlayer player) {
 		if(player.isOnline()) {
@@ -82,10 +96,18 @@ public class ACPlayer {
 			this.offlineP = player;
 		}
 	}
-	
-	public int getTokens() {
-		return this.tokens;
-	}
+
+	public void getTokens(final APILoadCallback callback) {
+	    if(this.isLoaded) {
+	        callback.run(this.tokens);
+        } else {
+            this.load(new APICallback() {
+                public void run(JSONObject response) {
+                    callback.run(tokens);
+                }
+            });
+        }
+    }
 	
 	public void addTokens(int amount) {
 		this.tokens += amount;
@@ -105,9 +127,21 @@ public class ACPlayer {
 				tokens = resp.getInt("amount");
 			}
 		});
-		
-		this.notify(ChatColor.GREEN + "" + amount + ChatColor.GOLD + " tokens were added!");
 	}
+
+	public void addTokens(int amount, boolean notify) {
+	    this.addTokens(amount);
+
+        if(notify) {
+            this.notify(ChatColor.GREEN + "+" + amount + " Tokens!");
+        }
+    }
+
+	public void addTokens(int amount, ACPlayer adder) {
+	    this.addTokens(amount, true);
+
+        this.sendMessage(ChatColor.GOLD + "Tokens were added to you by " + adder.getName());
+    }
 	
 	public void removeTokens(int amount) {
 		this.tokens -= amount;
@@ -132,11 +166,16 @@ public class ACPlayer {
 	}
 	
 	public void openProfileGUI() {
-		ProfileItems profile = new ProfileItems();
-		Inventory inv = profile.getInventory(this.p);
-		profile.setTokens(this.tokens);
+		final ProfileItems profile = new ProfileItems(this.plugin);
+		final Inventory inv = profile.getInventory(this.p);
 		profile.setRegistered(this.isRegistered());
-		this.p.openInventory(inv);
+		this.getTokens(new APILoadCallback() {
+			public void run(Object response) {
+			    int tokens = (Integer) response;
+                profile.setTokens(tokens);
+				p.openInventory(inv);
+			}
+		});
 	}
 	
 	public boolean isRegistered() {
@@ -152,7 +191,7 @@ public class ACPlayer {
 	}
 
 	public boolean hasPermission(String permission) {
-		if(this.p != null) {
+		if(this.isOnline()) {
 			return this.p.hasPermission(permission);
 		}
 
@@ -166,7 +205,7 @@ public class ACPlayer {
 	 * @param message
 	 */
 	public void notify(String message) {
-		if(this.plugin.actionBarApi && this.p != null) {
+		if(this.plugin.actionBarApi && this.isOnline()) {
 			ActionBarAPI.sendActionBar(this.p, message);
 		} else {
 			this.sendMessage(message);
@@ -179,7 +218,7 @@ public class ACPlayer {
 	 * @param message
 	 */
 	public void sendMessage(String message) {
-		if(this.p != null) {
+		if(this.isOnline()) {
 			this.p.sendMessage(message);
 		}
 	}
@@ -190,7 +229,7 @@ public class ACPlayer {
 	 * @param message
 	 */
 	public void sendPrefixedMessage(String message) {
-		if(this.p != null) {
+		if(this.isOnline()) {
 			this.p.sendMessage(this.plugin.prefix + message);
 		}
 	}
@@ -204,7 +243,7 @@ public class ACPlayer {
 	 * @param text
 	 */
 	public void sendClickableCommand(String name, net.md_5.bungee.api.ChatColor color, String cmd, String text) {
-		if(this.p != null) {
+		if(this.isOnline()) {
 			TextComponent command = new TextComponent(name);
 			command.setColor(color);
 			command.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmd));

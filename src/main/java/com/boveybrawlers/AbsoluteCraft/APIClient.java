@@ -44,7 +44,6 @@ public class APIClient {
      * @return Future promise
      */
     public Future<HttpResponse<JsonNode>> get(String url, Map<String, Object> query, Callback<JsonNode> callback) {
-        this.plugin.getLogger().log(Level.INFO, "Making api call to " + this.buildUrl(url));
         return Unirest.get(this.buildUrl(url))
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")

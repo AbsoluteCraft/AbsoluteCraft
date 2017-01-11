@@ -41,7 +41,6 @@ public class AnnouncementManager {
             }
 
             public void completed(HttpResponse<JsonNode> response) {
-                plugin.getLogger().log(Level.INFO, "Got " + response.getStatus() + " response", response);
                 JSONArray resp = response.getBody().getArray();
 
                 for(int i = 0 ; i < resp.length(); i++) {

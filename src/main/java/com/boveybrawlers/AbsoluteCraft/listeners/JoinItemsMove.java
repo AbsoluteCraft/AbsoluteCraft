@@ -13,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 
+import java.util.logging.Level;
+
 public class JoinItemsMove implements Listener {
 	
 	private AbsoluteCraft plugin;
@@ -37,46 +39,46 @@ public class JoinItemsMove implements Listener {
 		ItemStack clicked = event.getCurrentItem();
 		Inventory inventory = event.getInventory();
 		
-		if(clicked != null && inventory != null) {
+		if(clicked != null && clicked.getItemMeta() != null && inventory != null) {
             String displayName = clicked.getItemMeta().getDisplayName();
 
-            if(inventory.getName().contains("Profile")) {
+            if(inventory.getTitle().contains("Profile")) {
                 if(displayName.contains("profile")) {
                     // Send the player a message with their profile URL
                     player.closeInventory();
-                    player.sendMessage(ChatColor.YELLOW + "http://absolutecraft.co.uk/player/" + player.getName());
+                    player.sendMessage(ChatColor.YELLOW + "https://absolutecraft.co.uk/player/" + player.getName());
                 } else if(displayName.contains("Achievements")) {
                     // Open the achievements GUI
-                    player.performCommand("/achievements");
+                    player.performCommand("achievements");
                 } else if(displayName.contains("Register")) {
                     // Send the player their Registration info
                     player.closeInventory();
-                    player.performCommand("/register");
+                    player.performCommand("register");
                 } else if(displayName.contains("Voting")) {
                     // Send the player information on voting
                     player.closeInventory();
-                    player.performCommand("/vote");
+                    player.performCommand("vote");
                 } else if(displayName.contains("Surveys")) {
                     // Send the player information on taking surveys
                     player.closeInventory();
-                    player.performCommand("/surveys");
+                    player.performCommand("surveys");
                 }
 
                 event.setCancelled(true);
-            } else if(inventory.getName().contains("Appearance")) {
+            } else if(inventory.getTitle().contains("Appearance")) {
                 if(displayName.contains("Armour")) {
                     // Open the armour GUI
-                    player.performCommand("/armour");
+                    player.performCommand("armour");
                 } else if(displayName.contains("Particle effects")) {
                     // Open the particle effects GUI
-                    player.performCommand("/upack menu");
+                    player.performCommand("upack menu");
                 } else if(displayName.contains("Pets")) {
                     // Open the pets GUI
-                    player.performCommand("/pet menu");
+                    player.performCommand("pet menu");
                 }
 
                 event.setCancelled(true);
-            } else if(inventory.getName().contains("Achievements")) {
+            } else if(inventory.getTitle().contains("Achievements")) {
                 // TODO: Load player achievements from the API
                 event.setCancelled(true);
             }

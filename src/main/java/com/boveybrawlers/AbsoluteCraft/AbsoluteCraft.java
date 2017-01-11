@@ -2,10 +2,6 @@ package com.boveybrawlers.AbsoluteCraft;
 
 import com.boveybrawlers.AbsoluteCraft.listeners.PlayerQuit;
 import com.boveybrawlers.AbsoluteCraft.managers.AnnouncementManager;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import net.milkbowl.vault.chat.Chat;
 
 import org.bukkit.ChatColor;
@@ -22,11 +18,6 @@ import com.boveybrawlers.AbsoluteCraft.listeners.PlayerJoin;
 import com.boveybrawlers.AbsoluteCraft.managers.PlayerManager;
 import com.boveybrawlers.AbsoluteCraft.utils.ErrorUtil;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
 
 public class AbsoluteCraft extends JavaPlugin {
 
@@ -82,14 +73,14 @@ public class AbsoluteCraft extends JavaPlugin {
     	getServer().getPluginManager().registerEvents(new JoinItemsMove(this), this);
 		getServer().getPluginManager().registerEvents(new JoinItemsInteract(this), this);
     }
-    
+
     private boolean setupChat() {
-    	RegisteredServiceProvider<Chat> chatProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-        if (chatProvider != null) {
-            this.chat = chatProvider.getProvider();
+        RegisteredServiceProvider<Chat> rsp = this.getServer().getServicesManager().getRegistration(Chat.class);
+        if(rsp != null) {
+            this.chat = rsp.getProvider();
         }
 
-        return (this.chat != null);
+        return this.chat != null;
     }
 
     private void onServerLoad() {

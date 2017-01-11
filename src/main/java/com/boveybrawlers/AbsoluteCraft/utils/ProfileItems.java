@@ -3,6 +3,7 @@ package com.boveybrawlers.AbsoluteCraft.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,79 +18,88 @@ public class ProfileItems {
 
 	private AbsoluteCraft plugin;
 	
-	private Inventory inventory;
+	private Inventory inventory = null;
+
+	public ProfileItems(AbsoluteCraft plugin) {
+	    this.plugin = plugin;
+    }
 	
 	public Inventory getInventory(Player player) {
-		ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM);
-		SkullMeta skullmeta = (SkullMeta) playerInfo.getItemMeta();
-		skullmeta.setOwner(player.getName());
-		
-		String name;
-		if(!player.getDisplayName().endsWith("s")) {
-			name = player.getDisplayName() + "'s";
-		} else {
-			name = player.getDisplayName() + "'";
-		}
-		if(this.plugin.chat != null) {
-			skullmeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.plugin.chat.getPlayerPrefix(player)) + name + ChatColor.RESET + " profile");
-		} else {
-			skullmeta.setDisplayName(ChatColor.YELLOW + "[Player]" + name + " profile");
-		}
-		List<String> lore = new ArrayList<String>();
-		lore.add(ChatColor.GRAY + "Click to see your AbsoluteCraft profile link");
-		skullmeta.setLore(lore);
-		playerInfo.setItemMeta(skullmeta);
-		
-		this.inventory.setItem(1, playerInfo);
-		
-		ItemStack tokens = new ItemStack(Material.GOLD_INGOT, 1);
-		ItemMeta meta = tokens.getItemMeta();
-		meta.setDisplayName(ChatColor.GOLD + "Tokens");
-		tokens.setItemMeta(meta);
-		
-		this.inventory.setItem(3, tokens);
-		
-		ItemStack achievements = new ItemStack(Material.EMERALD, 1);
-		meta = achievements.getItemMeta();
-		meta.setDisplayName(ChatColor.GREEN + "Achievements");
-		lore.clear();
-		lore.add(ChatColor.GRAY + "View your progress on achievements");
-		meta.setLore(lore);
-		achievements.setItemMeta(meta);
-		
-		this.inventory.setItem(5, achievements);
-		
-		ItemStack register = new ItemStack(Material.NAME_TAG, 1);
-		meta = register.getItemMeta();
-		lore.clear();
-		lore.add(ChatColor.GRAY + "Register on our website");
-		lore.add(ChatColor.GRAY + "to edit your profile and view stats");
-		meta.setLore(lore);
-		register.setItemMeta(meta);
-		
-		this.inventory.setItem(7, register);
-		
-		ItemStack voting = new ItemStack(Material.PAPER, 1);
-		meta = voting.getItemMeta();
-		meta.setDisplayName(ChatColor.AQUA + "Voting");
-		lore.clear();
-		lore.add(ChatColor.GRAY + "Vote for the server");
-		meta.setLore(lore);
-		voting.setItemMeta(meta);
-		
-		this.inventory.setItem(11, voting);
-		
-		ItemStack surveys = new ItemStack(Material.SIGN, 1);
-		meta = surveys.getItemMeta();
-		meta.setDisplayName(ChatColor.BLUE + "Surveys");
-		lore.clear();
-		lore.add(ChatColor.GRAY + "Make your voice heard by voting");
-		lore.add(ChatColor.GRAY + "on ideas and suggesting ideas");
-		lore.add(ChatColor.GRAY + "for the server");
-		meta.setLore(lore);
-		surveys.setItemMeta(meta);
-		
-		this.inventory.setItem(15, surveys);
+	    if(this.inventory == null) {
+            this.inventory = Bukkit.createInventory(player, 18, "Profile");
+
+            ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM);
+            SkullMeta skullmeta = (SkullMeta) playerInfo.getItemMeta();
+            skullmeta.setOwner(player.getName());
+
+            String name;
+            if(!player.getDisplayName().endsWith("s")) {
+                name = player.getDisplayName() + "'s";
+            } else {
+                name = player.getDisplayName() + "'";
+            }
+            if(this.plugin.chat != null) {
+                skullmeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.plugin.chat.getPlayerPrefix(player)) + name + ChatColor.RESET + " profile");
+            } else {
+                skullmeta.setDisplayName(ChatColor.YELLOW + "[Player]" + name + " profile");
+            }
+            List<String> lore = new ArrayList<String>();
+            lore.add(ChatColor.GRAY + "Click to see your AbsoluteCraft profile link");
+            skullmeta.setLore(lore);
+            playerInfo.setItemMeta(skullmeta);
+
+            this.inventory.setItem(1, playerInfo);
+
+            ItemStack tokens = new ItemStack(Material.GOLD_INGOT, 1);
+            ItemMeta meta = tokens.getItemMeta();
+            meta.setDisplayName(ChatColor.GOLD + "Tokens");
+            tokens.setItemMeta(meta);
+
+            this.inventory.setItem(3, tokens);
+
+            ItemStack achievements = new ItemStack(Material.EMERALD, 1);
+            meta = achievements.getItemMeta();
+            meta.setDisplayName(ChatColor.GREEN + "Achievements");
+            lore.clear();
+            lore.add(ChatColor.GRAY + "View your progress on achievements");
+            meta.setLore(lore);
+            achievements.setItemMeta(meta);
+
+            this.inventory.setItem(5, achievements);
+
+            ItemStack register = new ItemStack(Material.NAME_TAG, 1);
+            meta = register.getItemMeta();
+            meta.setDisplayName(ChatColor.DARK_GREEN + "Register");
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Register on our website");
+            lore.add(ChatColor.GRAY + "to edit your profile and view stats");
+            meta.setLore(lore);
+            register.setItemMeta(meta);
+
+            this.inventory.setItem(7, register);
+
+            ItemStack voting = new ItemStack(Material.PAPER, 1);
+            meta = voting.getItemMeta();
+            meta.setDisplayName(ChatColor.AQUA + "Voting");
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Vote for the server");
+            meta.setLore(lore);
+            voting.setItemMeta(meta);
+
+            this.inventory.setItem(11, voting);
+
+            ItemStack surveys = new ItemStack(Material.SIGN, 1);
+            meta = surveys.getItemMeta();
+            meta.setDisplayName(ChatColor.BLUE + "Surveys");
+            lore.clear();
+            lore.add(ChatColor.GRAY + "Make your voice heard by voting");
+            lore.add(ChatColor.GRAY + "on ideas and suggesting ideas");
+            lore.add(ChatColor.GRAY + "for the server");
+            meta.setLore(lore);
+            surveys.setItemMeta(meta);
+
+            this.inventory.setItem(15, surveys);
+        }
 		
 		return this.inventory;
 	}
@@ -104,7 +114,7 @@ public class ProfileItems {
 	}
 	
 	public void setRegistered(boolean registered) {
-		ItemStack register = this.inventory.getItem(5);
+		ItemStack register = this.inventory.getItem(7);
 		ItemMeta meta = register.getItemMeta();
 		
 		if(registered) {
