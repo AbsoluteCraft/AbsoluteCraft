@@ -9,7 +9,7 @@ import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 
 public class ProfileCommand implements CommandExecutor {
 	
-	AbsoluteCraft plugin;
+	private AbsoluteCraft plugin;
 
 	public ProfileCommand(AbsoluteCraft plugin) {
 		this.plugin = plugin;

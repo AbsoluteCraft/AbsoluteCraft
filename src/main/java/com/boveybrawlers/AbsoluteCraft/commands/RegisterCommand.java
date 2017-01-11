@@ -10,11 +10,11 @@ import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 
 public class RegisterCommand implements CommandExecutor {
 
-	AbsoluteCraft plugin;
+	private AbsoluteCraft plugin;
 
 	public RegisterCommand(AbsoluteCraft plugin) {
-		this.plugin = plugin;
-	}
+        this.plugin = plugin;
+    }
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		ACPlayer player = plugin.players.find(sender);

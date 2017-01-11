@@ -1,5 +1,7 @@
 package com.boveybrawlers.AbsoluteCraft;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -33,18 +35,21 @@ public class ACPlayer {
 	}
 	
 	public void load(final APICallback callback) {
-		JSONObject body = new JSONObject();
-		body.put("uuid", this.p.getUniqueId());
-		
-		this.plugin.client.get("/player", body, new Callback<JsonNode>() {
-			public void cancelled() {}
+	    Map<String, Object> query = new HashMap<String, Object>();
+        query.put("uuid", this.p.getUniqueId().toString());
+
+		this.plugin.client.get("/player", query, new Callback<JsonNode>() {
+			public void cancelled() {
+			    plugin.getLogger().log(Level.SEVERE, "API call cancelled");
+            }
 			public void failed(UnirestException e) {
 				plugin.getLogger().log(Level.SEVERE, "Failed to load /player", e);
 			}
-			
-			
+
 			public void completed(HttpResponse<JsonNode> response) {
+				plugin.getLogger().log(Level.INFO, "Got " + response.getStatus() + " response", response);
 				JSONObject resp = response.getBody().getObject();
+                plugin.getLogger().log(Level.INFO, "Got OK response for " + resp.getString("username") + "!");
 				
 				// TODO: Store more attributes in this model
 				tokens = resp.getInt("tokens");
@@ -60,6 +65,14 @@ public class ACPlayer {
 		}
 		
 		return this.offlineP;
+	}
+
+	public boolean isOnline() {
+		if(this.p != null) {
+			return true;
+		}
+
+		return false;
 	}
 	
 	public void setPlayer(OfflinePlayer player) {
@@ -136,6 +149,14 @@ public class ACPlayer {
 		}
 		
 		return null;
+	}
+
+	public boolean hasPermission(String permission) {
+		if(this.p != null) {
+			return this.p.hasPermission(permission);
+		}
+
+		return this.offlineP.getPlayer().hasPermission(permission);
 	}
 	
 	/**

@@ -13,7 +13,7 @@ import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 
 public class HelpCommand implements CommandExecutor {
 
-	AbsoluteCraft plugin;
+	private AbsoluteCraft plugin;
 	
 	public HelpCommand(AbsoluteCraft plugin) {
 		this.plugin = plugin;

@@ -9,10 +9,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.boveybrawlers.AbsoluteCraft.ACPlayer;
 import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
+import org.bukkit.inventory.ItemStack;
 
-public class JoinItemsInteract implements Listener {
+ public class JoinItemsInteract implements Listener {
 	
-	AbsoluteCraft plugin;
+	private AbsoluteCraft plugin;
 	
 	public JoinItemsInteract(AbsoluteCraft plugin) {
 		this.plugin = plugin;
@@ -25,27 +26,26 @@ public class JoinItemsInteract implements Listener {
 		
 		if(player == null) {
 			plugin.errors.unknownPlayer(p);
+			return;
 		}
+
+		ItemStack item = p.getInventory().getItemInHand();
 		
-		if(p.hasPermission("absolutecraft.joinitems")) {
-			if(p.getInventory().getItemInHand().getType() == Material.SKULL_ITEM) {
-				if(p.getInventory().getItemInHand().getItemMeta().getDisplayName().contains("Profile")) {
-					if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						player.openProfileGUI();
-						
-						// Stop the block being placed
-						event.setCancelled(true);
-					}
-				}
-			} else if(p.getInventory().getItemInHand().getType() == Material.ARMOR_STAND) {
-				if(p.getInventory().getItemInHand().getItemMeta().getDisplayName().contains("Appearance")) {
-					if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						// TODO - Open Apperance GUI
-						// player.openApperanceGUI();
-						
-						// Stop the block being placed
-						event.setCancelled(true);
-					}
+		if(item != null && p.hasPermission("absolutecraft.joinitems")) {
+			if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				String displayName = item.getItemMeta().getDisplayName();
+
+				if(item.getType() == Material.SKULL_ITEM && displayName.contains("Profile")) {
+					player.openProfileGUI();
+
+					// Stop the block being placed
+					event.setCancelled(true);
+				} else if(item.getType() == Material.ARMOR_STAND && displayName.contains("Appearance")) {
+					// TODO - Open Apperance GUI
+					// player.openApperanceGUI();
+
+					// Stop the block being placed
+					event.setCancelled(true);
 				}
 			}
 		}

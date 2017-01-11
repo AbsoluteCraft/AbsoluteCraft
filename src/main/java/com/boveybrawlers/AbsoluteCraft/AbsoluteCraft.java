@@ -1,5 +1,11 @@
 package com.boveybrawlers.AbsoluteCraft;
 
+import com.boveybrawlers.AbsoluteCraft.listeners.PlayerQuit;
+import com.boveybrawlers.AbsoluteCraft.managers.AnnouncementManager;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.milkbowl.vault.chat.Chat;
 
 import org.bukkit.ChatColor;
@@ -15,6 +21,12 @@ import com.boveybrawlers.AbsoluteCraft.listeners.JoinItemsMove;
 import com.boveybrawlers.AbsoluteCraft.listeners.PlayerJoin;
 import com.boveybrawlers.AbsoluteCraft.managers.PlayerManager;
 import com.boveybrawlers.AbsoluteCraft.utils.ErrorUtil;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.logging.Level;
 
 public class AbsoluteCraft extends JavaPlugin {
 
@@ -24,6 +36,7 @@ public class AbsoluteCraft extends JavaPlugin {
     public APIClient client;
     
     public PlayerManager players;
+    public AnnouncementManager announcements;
     
     public ErrorUtil errors;
     
@@ -40,6 +53,7 @@ public class AbsoluteCraft extends JavaPlugin {
         
         this.client = new APIClient(this);
         this.players = new PlayerManager(this);
+        this.announcements = new AnnouncementManager(this);
         
         this.errors = new ErrorUtil(this);
         
@@ -49,29 +63,43 @@ public class AbsoluteCraft extends JavaPlugin {
         if(getServer().getPluginManager().isPluginEnabled("ActionBarAPI")) {
 			this.actionBarApi = true;
 		}
+
+		// Run logic after the server has finished loading
+        this.onServerLoad();
     }
 
-    public void registerCommands() {
+    private void registerCommands() {
 		getCommand("help").setExecutor(new HelpCommand(this));
 		getCommand("profile").setExecutor(new ProfileCommand(this));
 		getCommand("register").setExecutor(new RegisterCommand(this));
 		getCommand("tokens").setExecutor(new TokenCommand(this));
     }
 
-    public void registerListeners() {
+    private void registerListeners() {
     	getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerQuit(this), this);
     	
     	getServer().getPluginManager().registerEvents(new JoinItemsMove(this), this);
 		getServer().getPluginManager().registerEvents(new JoinItemsInteract(this), this);
     }
     
-    public boolean setupChat() {
+    private boolean setupChat() {
     	RegisteredServiceProvider<Chat> chatProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
         if (chatProvider != null) {
             this.chat = chatProvider.getProvider();
         }
 
         return (this.chat != null);
+    }
+
+    private void onServerLoad() {
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncDelayedTask(this, new Runnable() {
+            public void run() {
+                // Load announcements from API and schedule broadcasting
+                announcements.load();
+            }
+        }, 0);
     }
 
 }

@@ -14,7 +14,7 @@ import com.boveybrawlers.AbsoluteCraft.utils.APICallback;
 
 public class TokenCommand implements CommandExecutor {
 	
-	AbsoluteCraft plugin;
+	private AbsoluteCraft plugin;
 
 	public TokenCommand(AbsoluteCraft plugin) {
 		this.plugin = plugin;
@@ -29,13 +29,18 @@ public class TokenCommand implements CommandExecutor {
 		}
 		
 		if(args.length == 0) {
+		    player.sendMessage("Loading player...");
 			player.load(new APICallback() {
 				public void run(JSONObject resp) {
+                    player.sendMessage("We have resp");
+                    player.sendMessage("RESP FOR " + resp.getString("username"));
 					player.sendMessage(plugin.prefix + ChatColor.GOLD + player.p.getName() + (player.p.getName().endsWith("s") ? "'" : "'s") + " Tokens: " + ChatColor.GREEN + player.getTokens());
 				}
 			});
+
+			return true;
 		} else if(args.length == 1) {
-			String username = args[1];
+			String username = args[0];
 			@SuppressWarnings("deprecation")
 			OfflinePlayer offline = Bukkit.getOfflinePlayer(username);
 			if(offline == null) {
@@ -51,6 +56,8 @@ public class TokenCommand implements CommandExecutor {
 					player.sendMessage(plugin.prefix + ChatColor.GOLD + acPlayer.p.getName() + (acPlayer.p.getName().endsWith("s") ? "'" : "'s") + " Tokens: " + ChatColor.GREEN + acPlayer.getTokens());					
 				}
 			});
+
+			return true;
 		} else if(args.length == 3 && player.p.isOp()) {
 			if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) {
 				String username = args[1];

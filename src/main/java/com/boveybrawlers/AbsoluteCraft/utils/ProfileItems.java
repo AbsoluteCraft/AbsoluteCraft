@@ -15,7 +15,7 @@ import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 
 public class ProfileItems {
 
-	AbsoluteCraft plugin;
+	private AbsoluteCraft plugin;
 	
 	private Inventory inventory;
 	
@@ -30,8 +30,8 @@ public class ProfileItems {
 		} else {
 			name = player.getDisplayName() + "'";
 		}
-		if(plugin.chat != null) {
-			skullmeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.chat.getPlayerPrefix(player)) + name + ChatColor.RESET + " profile");
+		if(this.plugin.chat != null) {
+			skullmeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.plugin.chat.getPlayerPrefix(player)) + name + ChatColor.RESET + " profile");
 		} else {
 			skullmeta.setDisplayName(ChatColor.YELLOW + "[Player]" + name + " profile");
 		}

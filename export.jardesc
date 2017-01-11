@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
-    <jar path="/Users/danbovey/Documents/AbsoluteCraft/plugins/AbsoluteCraft-4.8.jar"/>
+    <jar path="/Users/danbovey/Documents/AbsoluteCraft/_Spigot Server/plugins/AbsoluteCraft-5.0.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/com.boveybrawlers.AbsoluteCraft/export.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="false" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>

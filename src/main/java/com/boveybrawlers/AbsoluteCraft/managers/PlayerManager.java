@@ -2,7 +2,9 @@ package com.boveybrawlers.AbsoluteCraft.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,10 +14,19 @@ import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 public class PlayerManager {
 	
 	public AbsoluteCraft plugin;
-	public List<ACPlayer> players = new ArrayList<ACPlayer>();
+	private List<ACPlayer> players = new ArrayList<ACPlayer>();
 	
 	public PlayerManager(AbsoluteCraft plugin) {
 		this.plugin = plugin;
+	}
+
+	/**
+	 * Get a list of all players
+	 *
+	 * @return List of ACPlayers
+	 */
+	public List<ACPlayer> all() {
+		return this.players;
 	}
 	
 	/**
@@ -65,7 +76,7 @@ public class PlayerManager {
 	 */
 	public ACPlayer find(String username) {
 		for(ACPlayer player : players) {
-			if(player.p.getName() == username) {
+			if(player.p.getName().equals(username)) {
 				return player;
 			}
 		}
@@ -80,11 +91,12 @@ public class PlayerManager {
 	 * @return
 	 */
 	public ACPlayer find(Player player) {
-		int index = players.indexOf(player);
-		
-		if(index > -1) {
-			return this.players.get(index);
-		}
+        for(ACPlayer acPlayer : players) {
+            OfflinePlayer offP = (OfflinePlayer) acPlayer.getPlayer();
+            if(offP.getUniqueId().equals(player.getUniqueId())) {
+                return acPlayer;
+            }
+        }
 		
 		return null;
 	}

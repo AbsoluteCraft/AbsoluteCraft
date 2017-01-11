@@ -1,0 +1,16 @@
+name: AbsoluteCraft
+main: com.boveybrawlers.AbsoluteCraft.AbsoluteCraft
+version: 5.0
+commands:
+    help:
+        description: Get help and information about the server
+        usage: /help
+    profile:
+        description: Open the profile GUI
+        usage: /profile
+    register:
+        description: Confirm your identity to register on the website
+        usage: /register
+    tokens:
+        description: View and manage your tokens
+        usage: /tokens

@@ -23,7 +23,7 @@ public class JoinItems {
 			lore.add(ChatColor.GRAY + "to on Absolute" + ChatColor.GREEN + "Craft" + ChatColor.GRAY + "!");
 			meta.setLore(lore);
 			compass.setItemMeta(meta);
-			
+
 			if(!player.getInventory().contains(compass)) {
 				if(player.getInventory().getItem(1) != null && !player.getInventory().getItem(1).getType().equals(Material.COMPASS)) {
 					ItemStack item = player.getInventory().getItem(1);
