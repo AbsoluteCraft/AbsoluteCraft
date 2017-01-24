@@ -25,7 +25,7 @@ public class WarpItems {
 
         ItemStack creative = new ItemStack(Material.GRASS);
         ItemMeta meta = creative.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_GREEN + "Creative");gi
+        meta.setDisplayName(ChatColor.DARK_GREEN + "Creative");
         creative.setItemMeta(meta);
         this.inventory.setItem(2, creative);
 
