@@ -31,6 +31,7 @@ public class ACPlayer {
     private boolean isLoaded = false;
 	
 	private Integer tokens;
+    private JSONObject resp = null;
 	
 	public ACPlayer(AbsoluteCraft plugin) {
 		this.plugin = plugin;
@@ -53,7 +54,7 @@ public class ACPlayer {
 			}
 
 			public void completed(HttpResponse<JsonNode> response) {
-				JSONObject resp = response.getBody().getObject();
+				resp = response.getBody().getObject();
 				
 				// TODO: Store more attributes in this model
 				tokens = resp.getInt("tokens");
@@ -168,23 +169,27 @@ public class ACPlayer {
 	public void openProfileGUI() {
 		final ProfileItems profile = new ProfileItems(this.plugin);
 		final Inventory inv = profile.getInventory(this.p);
-		profile.setRegistered(this.isRegistered());
 		this.getTokens(new APILoadCallback() {
 			public void run(Object response) {
 			    int tokens = (Integer) response;
                 profile.setTokens(tokens);
+                profile.setRegistered(isRegistered());
 				p.openInventory(inv);
 			}
 		});
 	}
 	
 	public boolean isRegistered() {
-		return false;
+	    if(this.resp != null) {
+            return this.resp.getBoolean("registered");
+        }
+
+        return false;
 	}
 	
 	public String getEmail() {
 		if(this.isRegistered()) {
-			return "example@mc-ac.com";
+			return this.resp.getJSONObject("user").getString("email");
 		}
 		
 		return null;

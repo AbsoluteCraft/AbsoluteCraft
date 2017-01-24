@@ -42,7 +42,35 @@ public class JoinItemsMove implements Listener {
 		if(clicked != null && clicked.getItemMeta() != null && inventory != null) {
             String displayName = clicked.getItemMeta().getDisplayName();
 
-            if(inventory.getTitle().contains("Profile")) {
+            if(inventory.getTitle().contains("Warps")) {
+                if(displayName.contains("Creative")) {
+                    player.closeInventory();
+
+                    if(this.plugin.serverName.equals("creative")) {
+                        player.performCommand("warp creative");
+                    } else {
+                        player.performCommand("server creative");
+                    }
+                } else if(displayName.contains("Plot")) {
+                    player.closeInventory();
+
+                    if(this.plugin.serverName.equals("creative")) {
+                        player.performCommand("warp plot");
+                    } else {
+                        player.performCommand("server creative");
+                    }
+                } else if(displayName.contains("Survival")) {
+                    player.closeInventory();
+
+                    if(this.plugin.serverName.equals("survival")) {
+                        player.performCommand("warp spawn");
+                    } else {
+                        player.performCommand("server survival");
+                    }
+                }
+
+                event.setCancelled(true);
+            } else if(inventory.getTitle().contains("Profile")) {
                 if(displayName.contains("profile")) {
                     // Send the player a message with their profile URL
                     player.closeInventory();
@@ -58,10 +86,10 @@ public class JoinItemsMove implements Listener {
                     // Send the player information on voting
                     player.closeInventory();
                     player.performCommand("vote");
-                } else if(displayName.contains("Surveys")) {
-                    // Send the player information on taking surveys
+                } else if(displayName.contains("Feedback")) {
+                    // Send the player information on submitting feedback
                     player.closeInventory();
-                    player.performCommand("surveys");
+                    player.performCommand("feedback");
                 }
 
                 event.setCancelled(true);

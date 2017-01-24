@@ -2,6 +2,12 @@ name: AbsoluteCraft
 main: com.boveybrawlers.AbsoluteCraft.AbsoluteCraft
 version: 5.0
 commands:
+    achievements:
+        description: View your achievements
+        usage: /achievements
+    feedback:
+        description: Get information on our Trello board
+        usage: /feedback
     help:
         description: Get help and information about the server
         usage: /help
@@ -14,3 +20,6 @@ commands:
     tokens:
         description: View and manage your tokens
         usage: /tokens
+    vote:
+        description: Get information about voting for the server
+        usage: /vote

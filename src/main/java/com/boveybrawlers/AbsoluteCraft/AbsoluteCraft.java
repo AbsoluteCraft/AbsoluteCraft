@@ -1,5 +1,6 @@
 package com.boveybrawlers.AbsoluteCraft;
 
+import com.boveybrawlers.AbsoluteCraft.commands.*;
 import com.boveybrawlers.AbsoluteCraft.listeners.PlayerQuit;
 import com.boveybrawlers.AbsoluteCraft.managers.AnnouncementManager;
 import net.milkbowl.vault.chat.Chat;
@@ -8,10 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.boveybrawlers.AbsoluteCraft.commands.HelpCommand;
-import com.boveybrawlers.AbsoluteCraft.commands.ProfileCommand;
-import com.boveybrawlers.AbsoluteCraft.commands.RegisterCommand;
-import com.boveybrawlers.AbsoluteCraft.commands.TokenCommand;
 import com.boveybrawlers.AbsoluteCraft.listeners.JoinItemsInteract;
 import com.boveybrawlers.AbsoluteCraft.listeners.JoinItemsMove;
 import com.boveybrawlers.AbsoluteCraft.listeners.PlayerJoin;
@@ -34,6 +31,8 @@ public class AbsoluteCraft extends JavaPlugin {
     public Chat chat = null;
     public boolean actionBarApi = false;
 
+    public String serverName;
+
     public void onEnable() {
         plugin = this;
 
@@ -49,6 +48,8 @@ public class AbsoluteCraft extends JavaPlugin {
         this.errors = new ErrorUtil(this);
         
         this.setupChat();
+
+        this.serverName = this.plugin.getConfig().getString("server_name");
         
         // Check for the ActionBarAPI plugin
         if(getServer().getPluginManager().isPluginEnabled("ActionBarAPI")) {
@@ -60,10 +61,13 @@ public class AbsoluteCraft extends JavaPlugin {
     }
 
     private void registerCommands() {
+        getCommand("achievements").setExecutor(new AchievementsCommand(this));
+        getCommand("feedback").setExecutor(new FeedbackCommand(this));
 		getCommand("help").setExecutor(new HelpCommand(this));
 		getCommand("profile").setExecutor(new ProfileCommand(this));
 		getCommand("register").setExecutor(new RegisterCommand(this));
 		getCommand("tokens").setExecutor(new TokenCommand(this));
+        getCommand("vote").setExecutor(new VoteCommand(this));
     }
 
     private void registerListeners() {

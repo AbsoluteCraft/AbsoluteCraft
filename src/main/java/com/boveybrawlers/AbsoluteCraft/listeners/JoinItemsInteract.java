@@ -1,5 +1,6 @@
  package com.boveybrawlers.AbsoluteCraft.listeners;
 
+import com.boveybrawlers.AbsoluteCraft.utils.WarpItems;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,14 +36,19 @@ import org.bukkit.inventory.ItemStack;
 			if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				String displayName = item.getItemMeta().getDisplayName();
 
-				if(item.getType() == Material.SKULL_ITEM && displayName.contains("Profile")) {
+				if(item.getType() == Material.COMPASS && displayName.contains("Warps")) {
+				    WarpItems warpItems = new WarpItems(this.plugin);
+                    p.openInventory(warpItems.getInventory(p));
+
+				    // Stop the block being placed
+				    event.setCancelled(true);
+                } else if(item.getType() == Material.SKULL_ITEM && displayName.contains("Profile")) {
 					player.openProfileGUI();
 
 					// Stop the block being placed
 					event.setCancelled(true);
 				} else if(item.getType() == Material.ARMOR_STAND && displayName.contains("Appearance")) {
 					// TODO - Open Apperance GUI
-					// player.openApperanceGUI();
 
 					// Stop the block being placed
 					event.setCancelled(true);

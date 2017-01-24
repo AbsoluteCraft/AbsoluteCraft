@@ -90,11 +90,11 @@ public class ProfileItems {
 
             ItemStack surveys = new ItemStack(Material.SIGN, 1);
             meta = surveys.getItemMeta();
-            meta.setDisplayName(ChatColor.BLUE + "Surveys");
+            meta.setDisplayName(ChatColor.BLUE + "Feedback");
             lore.clear();
             lore.add(ChatColor.GRAY + "Make your voice heard by voting");
             lore.add(ChatColor.GRAY + "on ideas and suggesting ideas");
-            lore.add(ChatColor.GRAY + "for the server");
+            lore.add(ChatColor.GRAY + "on our public Trello board.");
             meta.setLore(lore);
             surveys.setItemMeta(meta);
 
@@ -119,6 +119,9 @@ public class ProfileItems {
 		
 		if(registered) {
 			meta.setDisplayName(ChatColor.DARK_GREEN + "Registered ✔");
+            List<String> lore = new ArrayList<String>();
+            lore.add(ChatColor.GRAY + "You are registered");
+            meta.setLore(lore);
 		} else {
 			meta.setDisplayName(ChatColor.DARK_GREEN + "Register");
 		}
