@@ -62,7 +62,7 @@ public class JoinItems {
 			meta.setLore(lore);
 			armorstand.setItemMeta(meta);
 			
-			if(player.getInventory().contains(armorstand)) {
+			if(!player.getInventory().contains(armorstand)) {
 				if(player.getInventory().getItem(2) != null && !player.getInventory().getItem(2).getType().equals(Material.ARMOR_STAND)) {
 					ItemStack item = player.getInventory().getItem(2);
 					player.getInventory().addItem(item);
