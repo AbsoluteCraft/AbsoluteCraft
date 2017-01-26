@@ -36,7 +36,12 @@ public class PlayerManager {
 	 * @return ACPlayer
 	 */
 	public ACPlayer add(Player player) {
-		ACPlayer acPlayer = new ACPlayer(this.plugin);
+		ACPlayer acPlayer = this.find(player);
+		if(acPlayer != null) {
+			return acPlayer;
+		}
+
+		acPlayer = new ACPlayer(this.plugin);
 		acPlayer.setPlayer(player);
 		this.players.add(acPlayer);
 		

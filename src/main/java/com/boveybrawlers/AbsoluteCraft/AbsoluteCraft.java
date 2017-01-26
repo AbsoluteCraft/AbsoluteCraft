@@ -1,7 +1,7 @@
 package com.boveybrawlers.AbsoluteCraft;
 
 import com.boveybrawlers.AbsoluteCraft.commands.*;
-import com.boveybrawlers.AbsoluteCraft.listeners.PlayerQuit;
+import com.boveybrawlers.AbsoluteCraft.listeners.*;
 import com.boveybrawlers.AbsoluteCraft.managers.AnnouncementManager;
 import net.milkbowl.vault.chat.Chat;
 
@@ -9,9 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.boveybrawlers.AbsoluteCraft.listeners.JoinItemsInteract;
-import com.boveybrawlers.AbsoluteCraft.listeners.JoinItemsMove;
-import com.boveybrawlers.AbsoluteCraft.listeners.PlayerJoin;
 import com.boveybrawlers.AbsoluteCraft.managers.PlayerManager;
 import com.boveybrawlers.AbsoluteCraft.utils.ErrorUtil;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -73,9 +70,12 @@ public class AbsoluteCraft extends JavaPlugin {
     private void registerListeners() {
     	getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);
         getServer().getPluginManager().registerEvents(new PlayerQuit(this), this);
-    	
-    	getServer().getPluginManager().registerEvents(new JoinItemsMove(this), this);
+
+        getServer().getPluginManager().registerEvents(new AchievementsInventoryClick(this), this);
+        getServer().getPluginManager().registerEvents(new AppearanceInventoryClick(this), this);
 		getServer().getPluginManager().registerEvents(new JoinItemsInteract(this), this);
+        getServer().getPluginManager().registerEvents(new ProfileInventoryClick(this), this);
+        getServer().getPluginManager().registerEvents(new WarpInventoryClick(this), this);
     }
 
     private boolean setupChat() {

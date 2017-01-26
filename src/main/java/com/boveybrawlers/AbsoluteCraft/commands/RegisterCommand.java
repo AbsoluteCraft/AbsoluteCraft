@@ -27,7 +27,7 @@ public class RegisterCommand implements CommandExecutor {
 		if(args.length == 0) {
 			if(player.isRegistered()) {
 				player.sendMessage(ChatColor.BLUE + "You are already registered with the email " + ChatColor.DARK_GREEN + player.getEmail());
-				player.sendMessage("If you have forgotten your login details, please go to " + ChatColor.YELLOW + "https://absolutecraft.co.uk/forgot/password");
+				player.sendMessage("If you have forgotten your login details, please go to " + ChatColor.YELLOW + "https://absolutecraft.co.uk/recover/password");
 				player.sendMessage(ChatColor.RED + "If you believe this is an error, please tell an Operator or contact " + ChatColor.WHITE + "hello@absolutecraft.co.uk");
 			} else {
 				String code = this.generateCode(player);

@@ -1,18 +1,22 @@
 package com.boveybrawlers.AbsoluteCraft;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.boveybrawlers.AbsoluteCraft.stacks.ProfileStack;
 import com.boveybrawlers.AbsoluteCraft.utils.APILoadCallback;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.json.JSONObject;
 
 import com.boveybrawlers.AbsoluteCraft.utils.APICallback;
-import com.boveybrawlers.AbsoluteCraft.utils.ProfileItems;
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -102,11 +106,7 @@ public class ACPlayer {
 	    if(this.isLoaded) {
 	        callback.run(this.tokens);
         } else {
-            this.load(new APICallback() {
-                public void run(JSONObject response) {
-                    callback.run(tokens);
-                }
-            });
+            this.load(response -> callback.run(tokens));
         }
     }
 	
@@ -167,15 +167,30 @@ public class ACPlayer {
 	}
 	
 	public void openProfileGUI() {
-		final ProfileItems profile = new ProfileItems(this.plugin);
-		final Inventory inv = profile.getInventory(this.p);
-		this.getTokens(new APILoadCallback() {
-			public void run(Object response) {
-			    int tokens = (Integer) response;
-                profile.setTokens(tokens);
-                profile.setRegistered(isRegistered());
-				p.openInventory(inv);
-			}
+        Inventory profileInventory = (new ProfileStack(this.plugin)).asInventory(this.p);
+
+		this.getTokens(response -> {
+            // Update the tokens item
+            int tokens = (Integer) response;
+            ItemStack gold = profileInventory.getItem(3);
+            ItemMeta meta = gold.getItemMeta();
+            List<String> lore = new ArrayList<String>();
+            lore.add(ChatColor.GRAY + "You have " + ChatColor.GREEN + tokens + ChatColor.GRAY + " Tokens");
+            meta.setLore(lore);
+            gold.setItemMeta(meta);
+
+            // Update the register item
+            ItemStack register = profileInventory.getItem(7);
+            meta = register.getItemMeta();
+            if(isRegistered()) {
+                meta.setDisplayName(ChatColor.DARK_GREEN + "Registered ✔");
+                lore.clear();
+                lore.add(ChatColor.GRAY + "You are registered");
+                meta.setLore(lore);
+            }
+            register.setItemMeta(meta);
+
+            p.openInventory(profileInventory);
 		});
 	}
 	

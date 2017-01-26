@@ -63,7 +63,7 @@ public class AnnouncementManager {
 
                         List<ACPlayer> players = plugin.players.all();
                         for(ACPlayer player : players) {
-                            if(player.isOnline() && !player.hasPermission("absolutecraft.announcements.ignore")){
+                            if(player.isOnline() && !player.hasPermission("absolutecraft.announcements.ignore")) {
                                 player.sendMessage(announcement.getMessage());
                             }
                         }
