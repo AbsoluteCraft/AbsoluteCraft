@@ -1,3 +1,4 @@
 api_baseurl: https://absolutecraft.co.uk/api
 api_key: secret
 server_name: ''
+sentry_dsn: secret

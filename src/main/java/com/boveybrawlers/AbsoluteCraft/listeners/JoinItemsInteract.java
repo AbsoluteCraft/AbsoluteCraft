@@ -32,9 +32,9 @@ import org.bukkit.inventory.ItemStack;
 			return;
 		}
 
-		ItemStack item = p.getInventory().getItemInHand();
+		ItemStack item = p.getInventory().getItemInMainHand();
 		
-		if(item != null && p.hasPermission("absolutecraft.joinitems")) {
+		if(item != null && item.getItemMeta() != null && p.hasPermission("absolutecraft.joinitems")) {
 			if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				String displayName = item.getItemMeta().getDisplayName();
 

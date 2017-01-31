@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import com.boveybrawlers.AbsoluteCraft.stacks.ProfileStack;
-import com.boveybrawlers.AbsoluteCraft.utils.APILoadCallback;
+import com.boveybrawlers.AbsoluteCraft.utils.*;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -16,27 +15,23 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.json.JSONObject;
 
-import com.boveybrawlers.AbsoluteCraft.utils.APICallback;
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
-import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ACPlayer {
-	
+
 	public AbsoluteCraft plugin;
-	
+
 	public Player p = null;
 	public OfflinePlayer offlineP = null;
     private boolean isLoaded = false;
-	
+
 	private Integer tokens;
     private JSONObject resp = null;
-	
+
 	public ACPlayer(AbsoluteCraft plugin) {
 		this.plugin = plugin;
 	}
@@ -44,37 +39,39 @@ public class ACPlayer {
 	public boolean isLoaded() {
 	    return this.isLoaded;
     }
-	
+
 	public void load(final APICallback callback) {
 	    Map<String, Object> query = new HashMap<String, Object>();
         query.put("uuid", this.p.getUniqueId().toString());
 
-		this.plugin.client.get("/player", query, new Callback<JsonNode>() {
-			public void cancelled() {
-			    plugin.getLogger().log(Level.SEVERE, "API call cancelled");
-            }
-			public void failed(UnirestException e) {
-				plugin.getLogger().log(Level.SEVERE, "Failed to load /player", e);
-			}
+        this.plugin.client.get("/player", query, new UnirestCallback<JsonNode>(response -> {
+            resp = response.getBody().getObject();
 
-			public void completed(HttpResponse<JsonNode> response) {
-				resp = response.getBody().getObject();
-				
-				// TODO: Store more attributes in this model
-				tokens = resp.getInt("tokens");
+            // TODO: Store more attributes in this model
+            tokens = resp.getInt("tokens");
 
-                isLoaded = true;
-				
-				callback.run(resp);
-			}
-		});
+            isLoaded = true;
+
+            callback.run(resp);
+        }));
+
+        this.plugin.client.get("/player", query, new UnirestCallback<JsonNode>(response -> {
+            resp = response.getBody().getObject();
+
+            // TODO: Store more attributes in this model
+            tokens = resp.getInt("tokens");
+
+            isLoaded = true;
+
+            callback.run(resp);
+        }));
 	}
-	
+
 	public Object getPlayer() {
 		if(this.isOnline()) {
 			return this.p;
 		}
-		
+
 		return this.offlineP;
 	}
 
@@ -93,7 +90,7 @@ public class ACPlayer {
 
         return this.offlineP.getName();
     }
-	
+
 	public void setPlayer(OfflinePlayer player) {
 		if(player.isOnline()) {
 			this.p = (Player) player;
@@ -109,25 +106,18 @@ public class ACPlayer {
             this.load(response -> callback.run(tokens));
         }
     }
-	
+
 	public void addTokens(int amount) {
 		this.tokens += amount;
-		
+
 		JSONObject body = new JSONObject();
 		body.put("uuid", this.p.getUniqueId());
 		body.put("amount", amount);
-		
-		this.plugin.client.put("/player/tokens/add", body, new Callback<JsonNode>() {
-			public void cancelled() {}
-			public void failed(UnirestException e) {
-				plugin.getLogger().log(Level.SEVERE, "Failed /player/tokens/add", e);
-			}
-			
-			public void completed(HttpResponse<JsonNode> response) {
-				JSONObject resp = response.getBody().getObject();
-				tokens = resp.getInt("amount");
-			}
-		});
+
+        this.plugin.client.put("/player/tokens/add", body, new UnirestCallback<JsonNode>(response -> {
+            JSONObject resp = response.getBody().getObject();
+            tokens = resp.getInt("amount");
+        }));
 	}
 
 	public void addTokens(int amount, boolean notify) {
@@ -143,29 +133,22 @@ public class ACPlayer {
 
         this.sendMessage(ChatColor.GOLD + "Tokens were added to you by " + adder.getName());
     }
-	
+
 	public void removeTokens(int amount) {
 		this.tokens -= amount;
-		
+
 		JSONObject body = new JSONObject();
 		body.put("uuid", this.p.getUniqueId());
 		body.put("amount", amount);
-		
-		this.plugin.client.put("/player/tokens/remove", body, new Callback<JsonNode>() {
-			public void cancelled() {}
-			public void failed(UnirestException e) {
-				plugin.getLogger().log(Level.SEVERE, "Failed /player/tokens/remove", e);
-			}
-			
-			public void completed(HttpResponse<JsonNode> response) {
-				JSONObject resp = response.getBody().getObject();
-				tokens = resp.getInt("amount");
-			}
-		});
-		
+
+		this.plugin.client.put("/player/tokens/remove", body, new UnirestCallback<>(response -> {
+            JSONObject resp = response.getBody().getObject();
+            tokens = resp.getInt("amount");
+        }));
+
 		this.notify(ChatColor.RED + "" + amount + ChatColor.GOLD + " tokens were removed!");
 	}
-	
+
 	public void openProfileGUI() {
         Inventory profileInventory = (new ProfileStack(this.plugin)).asInventory(this.p);
 
@@ -193,7 +176,7 @@ public class ACPlayer {
             p.openInventory(profileInventory);
 		});
 	}
-	
+
 	public boolean isRegistered() {
 	    if(this.resp != null) {
             return this.resp.getBoolean("registered");
@@ -201,12 +184,12 @@ public class ACPlayer {
 
         return false;
 	}
-	
+
 	public String getEmail() {
 		if(this.isRegistered()) {
 			return this.resp.getJSONObject("user").getString("email");
 		}
-		
+
 		return null;
 	}
 
@@ -217,11 +200,11 @@ public class ACPlayer {
 
 		return this.offlineP.getPlayer().hasPermission(permission);
 	}
-	
+
 	/**
 	 * Send an ActionBar notification to the Player
 	 * Falls back to sending a text message if ActionBarAPI is not available
-	 * 
+	 *
 	 * @param message
 	 */
 	public void notify(String message) {
@@ -231,10 +214,10 @@ public class ACPlayer {
 			this.sendMessage(message);
 		}
 	}
-	
+
 	/**
 	 * Send a basic message to the Player
-	 * 
+	 *
 	 * @param message
 	 */
 	public void sendMessage(String message) {
@@ -242,10 +225,10 @@ public class ACPlayer {
 			this.p.sendMessage(message);
 		}
 	}
-	
+
 	/**
 	 * Send a prefixed message to the Player
-	 * 
+	 *
 	 * @param message
 	 */
 	public void sendPrefixedMessage(String message) {
@@ -253,10 +236,10 @@ public class ACPlayer {
 			this.p.sendMessage(this.plugin.prefix + message);
 		}
 	}
-	
+
 	/**
 	 * Send a clickable command to the Player
-	 * 
+	 *
 	 * @param name
 	 * @param color
 	 * @param cmd

@@ -46,6 +46,10 @@ public class ProfileInventoryClick implements Listener {
                     // Send the player information on submitting feedback
                     player.closeInventory();
                     player.performCommand("feedback");
+                } else if(displayName.contains("Discord")) {
+                    // Send the player the Discord Instant Invite URL
+                    player.closeInventory();
+                    player.sendMessage(ChatColor.BLUE + "Our Discord Server is: https://discord.gg/0djSCNQGGSdLPwwM");
                 }
 
                 event.setCancelled(true);

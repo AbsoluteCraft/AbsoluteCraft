@@ -34,6 +34,9 @@ public class AbsoluteCraft extends JavaPlugin {
         plugin = this;
 
         this.saveDefaultConfig();
+        this.serverName = this.plugin.getConfig().getString("server_name");
+
+        // TODO: Setup Sentry logging
 
         this.registerCommands();
         this.registerListeners();
@@ -45,8 +48,6 @@ public class AbsoluteCraft extends JavaPlugin {
         this.errors = new ErrorUtil(this);
         
         this.setupChat();
-
-        this.serverName = this.plugin.getConfig().getString("server_name");
         
         // Check for the ActionBarAPI plugin
         if(getServer().getPluginManager().isPluginEnabled("ActionBarAPI")) {

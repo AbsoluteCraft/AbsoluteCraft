@@ -94,7 +94,18 @@ public class ProfileStack implements IStack {
         meta.setLore(lore);
         feedback.setItemMeta(meta);
 
-        profileItems.put(15, feedback);
+        profileItems.put(13, feedback);
+
+        ItemStack discord = Skull.makeCustom("d6d9f25a7a4e6b75cf8eaa1daeb47fc948c5718244156755c85a5e68b98c3e5"); // Discord Logo
+        meta = discord.getItemMeta();
+        meta.setDisplayName(ChatColor.BLUE + "Discord Server");
+        lore.clear();
+        lore.add(ChatColor.GRAY + "Join our Discord server");
+        lore.add(ChatColor.GRAY + "and chat with us anytime!");
+        meta.setLore(lore);
+        discord.setItemMeta(meta);
+
+        profileItems.put(15, discord);
 
         return profileItems;
     }

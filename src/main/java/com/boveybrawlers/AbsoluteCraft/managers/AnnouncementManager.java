@@ -3,6 +3,7 @@ package com.boveybrawlers.AbsoluteCraft.managers;
 import com.boveybrawlers.AbsoluteCraft.ACPlayer;
 import com.boveybrawlers.AbsoluteCraft.AbsoluteCraft;
 import com.boveybrawlers.AbsoluteCraft.Announcement;
+import com.boveybrawlers.AbsoluteCraft.utils.UnirestCallback;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.async.Callback;
@@ -32,45 +33,36 @@ public class AnnouncementManager {
     }
 
     public void load() {
-        this.plugin.client.get("/announcements", new Callback<JsonNode>() {
-            public void cancelled() {
-                plugin.getLogger().log(Level.SEVERE, "API call cancelled");
+        this.plugin.client.get("/announcements", new UnirestCallback<>(response -> {
+            JSONArray resp = response.getBody().getArray();
+
+            for(int i = 0 ; i < resp.length(); i++) {
+                String message = resp.getString(i);
+
+                add(message);
             }
-            public void failed(UnirestException e) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to load /announcements", e);
-            }
 
-            public void completed(HttpResponse<JsonNode> response) {
-                JSONArray resp = response.getBody().getArray();
+            BukkitScheduler scheduler = plugin.getServer().getScheduler();
+            scheduler.scheduleSyncRepeatingTask(plugin, new Runnable() {
+                public void run() {
+                    current++;
 
-                for(int i = 0 ; i < resp.length(); i++) {
-                    String message = resp.getString(i);
+                    // Loop back around to the beginning
+                    if(current == announcements.size()) {
+                        current = 0;
+                    }
 
-                    add(message);
-                }
+                    Announcement announcement = announcements.get(current);
 
-                BukkitScheduler scheduler = plugin.getServer().getScheduler();
-                scheduler.scheduleSyncRepeatingTask(plugin, new Runnable() {
-                    public void run() {
-                        current++;
-
-                        // Loop back around to the beginning
-                        if(current == announcements.size()) {
-                            current = 0;
-                        }
-
-                        Announcement announcement = announcements.get(current);
-
-                        List<ACPlayer> players = plugin.players.all();
-                        for(ACPlayer player : players) {
-                            if(player.isOnline() && !player.hasPermission("absolutecraft.announcements.ignore")) {
-                                player.sendMessage(announcement.getMessage());
-                            }
+                    List<ACPlayer> players = plugin.players.all();
+                    for(ACPlayer player : players) {
+                        if(player.isOnline() && !player.hasPermission("absolutecraft.announcements.ignore")) {
+                            player.sendMessage(announcement.getMessage());
                         }
                     }
-                }, 2400L, 4800L); // 2 minutes after server load, every 4 minutes
-            }
-        });
+                }
+            }, 2400L, 4800L); // 2 minutes after server load, every 4 minutes
+        }));
     }
 
 }
